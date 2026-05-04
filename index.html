@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+    setHTML('result', '<h3>' + student + "'s Score: " + score + '/8</h3><p><b>Competency Requirement:</b> 6 out of 8 correct.</p>');
+
+    if(score >= 6){
+      setHTML('certificate', '<div class="certificate badge-glow"><h1>Certificate of Completion</h1><h2>' + student + '</h2><p>has completed the Poetry Analysis learning game and demonstrated understanding of structure, figurative language, tone, mood, and theme.</p><h3>Score: ' + score + '/8</h3><p class="footer">Created by Dwaynna Ramsay Morgan</p></div>');
+      launchConfetti();
+    }else{
+      setHTML('certificate', '<div class="certificate"><h2>Keep Practicing</h2><p>' + student + ', review the instruction sections and try again. You need at least 6 out of 8 correct to earn the certificate.</p><button type="button" onclick="restartGame()">Restart Game</button></div>');
+    }
+
+    setText('notes', collectNotes());
+  };
+
+  window.restartGame = function(){
+    location.reload();
+  };
+
+  window.downloadNotes = function(){
+    const blob = new Blob([collectNotes()], {type:'text/plain'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'poetry-analysis-notes.txt';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+  };
+
+  function launchConfetti(){
+    const canvas = byId('confetti');
+    if(!canvas || !canvas.getContext){ return; }
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for(let i = 0; i < 250; i++){
+      ctx.fillStyle = ['gold','#087f5b','#5aaee8','#ffffff'][Math.floor(Math.random()*4)];
+      ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 6, 6);
+    }
+    setTimeout(function(){ ctx.clearRect(0, 0, canvas.width, canvas.height); }, 3500);
+  }
+
+  function runTests(){
+    console.assert(!!byId('studentName'), 'Test failed: studentName input exists.');
+    console.assert(Array.isArray(pages) && pages.length === 9, 'Test failed: 9 pages should exist.');
+    console.assert(questions.length === 8, 'Test failed: quiz should contain 8 questions.');
+    console.assert(typeof window.restartGame === 'function', 'Test failed: restartGame function should exist.');
+    console.assert(questions.every(function(q){ return q.a.length === 4 && q.c >= 0 && q.c < 4; }), 'Test failed: each question has 4 options and one correct answer.');
+    console.assert(getValue('missingElement') === '', 'Test failed: getValue safely handles missing elements.');
+  }
+
+  shuffleQuestions();
+  runTests();
+})();
+</script>
+</body>
+</html>
